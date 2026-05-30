@@ -1,0 +1,27 @@
+---
+import { band } from '../data/site.js';
+const year = 2026;
+---
+<footer class="footer">
+  <div class="stripe-band"></div>
+  <div class="container footer-inner">
+    <a class="footer-mark" href="#top" aria-label="Dixie & Co. — torna su">
+      <img src="/img/logo-stretto.png" alt="Dixie & Co." width="1275" height="358" />
+    </a>
+    <p class="footer-meta">
+      {band.tagline} · {band.city} · © {year}
+    </p>
+    <p class="footer-credit">Fatto con amore e un po' di swing.</p>
+  </div>
+</footer>
+
+<style>
+  .footer{background:var(--color-cream);border-top:var(--rule-bold) solid var(--color-ink)}
+  .footer-inner{display:flex;flex-direction:column;align-items:center;gap:.4rem;
+    text-align:center;padding-block:var(--space-xl)}
+  .footer-mark{display:block;margin-bottom:.3rem}
+  .footer-mark img{height:clamp(46px,9vw,78px);width:auto}
+  .footer-meta{font-family:var(--font-head);text-transform:uppercase;letter-spacing:.06em;
+    font-size:.85rem;color:var(--color-ink-2)}
+  .footer-credit{font-family:var(--font-script);color:var(--color-cherry);font-size:1.2rem}
+</style>

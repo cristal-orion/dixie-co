@@ -1,0 +1,28 @@
+# dipendenze e build
+node_modules/
+dist/
+.astro/
+
+# NON committare il lockfile (il Dockerfile fa npm install fresco — regole Coolify)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# config locale agent
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# file di lavoro / sorgenti originali NON necessari al deploy
+assets-originali/
+Foto nove/
+hero.png
+Logotipo.png
+logo stretto.png
+df7ed656-*.png
+WhatsApp Audio*.mpeg
+WhatsApp Image*.jpeg
+style-guide.html
+Foto nove*/

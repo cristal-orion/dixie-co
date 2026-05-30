@@ -1,0 +1,294 @@
+---
+// Hero giradischi — intro a schermo intero.
+// Click sulla puntina → parte la canzone, il vinile gira, il sito si rivela
+// e il giradischi si rimpicciolisce nell'angolo come mini-player.
+import { band } from '../data/site.js';
+---
+
+<div id="stage" class="stage" aria-label="Intro: avvia la musica">
+  <div class="stage-stripes top"></div>
+  <div class="stage-glow"></div>
+
+  <div class="stage-inner">
+    <p class="stage-kicker script">since New Orleans, 1900s</p>
+
+    <div class="turntable" id="turntable">
+      <!-- braccetto / tonearm -->
+      <div class="tonearm" id="tonearm" aria-hidden="true">
+        <span class="tonearm-pivot"></span>
+        <span class="tonearm-arm"></span>
+        <span class="tonearm-head"></span>
+      </div>
+
+      <!-- piatto + vinile -->
+      <div class="platter">
+        <div class="record" id="record">
+          <div class="record-grooves"></div>
+          <div class="record-label">
+            <img src="/img/badge-disco.png" alt="" width="220" height="220" />
+          </div>
+          <span class="record-hole"></span>
+        </div>
+      </div>
+
+      <span class="rpm">33⅓</span>
+    </div>
+
+    <button class="needle-btn" id="needleBtn" type="button">
+      <span class="needle-dot" aria-hidden="true"></span>
+      Abbassa la puntina
+    </button>
+    <button class="enter-silent" id="enterSilent" type="button">entra senza musica →</button>
+  </div>
+  <div class="stage-stripes bottom"></div>
+</div>
+
+<!-- mini-player: solo il disco che gira (basso a sinistra) -->
+<button class="minidisc" id="miniDisc" type="button" hidden aria-label="Metti in pausa o riprendi la musica">
+  <span class="minidisc-vinyl">
+    <span class="minidisc-label"><img src="/img/badge-disco.png" alt="" width="48" height="48" /></span>
+    <span class="minidisc-hole"></span>
+  </span>
+  <span class="minidisc-state" aria-hidden="true"></span>
+</button>
+
+<audio id="song" src="/audio/song.mp3" loop preload="auto"></audio>
+
+<noscript><style>#stage{display:none!important}</style></noscript>
+
+<style>
+  .stage{
+    position:fixed;inset:0;z-index:100;
+    background:radial-gradient(120% 120% at 50% 35%, var(--color-cream), oklch(91% 0.035 80));
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  .stage-stripes{height:18px;flex:none;background:var(--stripe)}
+  .stage-stripes.bottom{margin-top:auto}
+  .stage-glow{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(60% 50% at 50% 42%, oklch(83% 0.16 80 / .35), transparent 70%)}
+  .stage-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:var(--space-md);padding:var(--space-lg);position:relative;z-index:1}
+  .stage-kicker{color:var(--color-cherry);font-size:clamp(1.4rem,4vw,2.4rem)}
+
+  /* ---- turntable ---- */
+  .turntable{
+    position:relative;
+    width:min(90vw, 72vh, 560px);aspect-ratio:1;
+    /* base in legno noce — ben distinta dal vinile nero */
+    background:
+      linear-gradient(150deg, oklch(52% 0.07 62), oklch(40% 0.06 58) 60%, oklch(34% 0.05 55));
+    border-radius:30px;
+    box-shadow:var(--shadow-lift),
+      inset 0 2px 0 oklch(64% 0.06 65 / .7),
+      inset 0 0 0 3px oklch(30% 0.04 55);
+    padding:8.5%;
+  }
+  /* sottile filetto ottone attorno alla base */
+  .turntable::after{content:"";position:absolute;inset:5px;border-radius:24px;
+    border:2px solid oklch(75% 0.10 80 / .35);pointer-events:none}
+  .platter{
+    width:100%;height:100%;border-radius:50%;
+    /* piatto argento metallico — fa staccare il vinile */
+    background:
+      conic-gradient(from 0deg, oklch(80% 0.01 80), oklch(62% 0.01 80) 25%, oklch(82% 0.01 80) 50%, oklch(60% 0.01 80) 75%, oklch(80% 0.01 80)),
+      radial-gradient(circle at 40% 34%, oklch(86% 0.01 80), oklch(58% 0.01 80) 72%);
+    display:grid;place-items:center;
+    box-shadow:inset 0 0 0 5px oklch(70% 0.01 80), inset 0 6px 22px oklch(40% 0 0 / .35),
+      0 2px 6px oklch(20% 0 0 /.3);
+  }
+  .record{
+    width:86%;height:86%;border-radius:50%;position:relative;
+    background:
+      repeating-radial-gradient(circle at 50% 50%,
+        oklch(16% 0.005 60) 0 2px, oklch(22% 0.01 60) 2px 4px),
+      radial-gradient(circle, oklch(20% 0.01 60), oklch(12% 0 0));
+    display:grid;place-items:center;
+    box-shadow:0 6px 18px oklch(12% 0 0 / .5);
+  }
+  .record-grooves{position:absolute;inset:6%;border-radius:50%;
+    background:repeating-radial-gradient(circle at 50% 50%,
+      transparent 0 3px, oklch(30% 0.04 28 / .14) 3px 4px)}
+  .record-label{
+    width:40%;height:40%;border-radius:50%;overflow:hidden;
+    background:var(--color-cream);
+    display:grid;place-items:center;z-index:2;
+    box-shadow:0 0 0 4px var(--color-cherry), 0 0 0 6px oklch(20% 0 0 / .4);
+  }
+  .record-label img{width:86%;height:86%;object-fit:contain}
+  .record-hole{position:absolute;z-index:3;width:9px;height:9px;border-radius:50%;
+    background:var(--color-cream);box-shadow:inset 0 0 0 2px oklch(20% 0 0 /.5)}
+
+  /* tonearm */
+  .tonearm{position:absolute;top:2%;right:4%;width:46%;height:46%;
+    transform-origin:88% 14%;transform:rotate(-32deg);z-index:5;
+    transition:transform var(--dur-slow) var(--ease-in-out)}
+  .tonearm-pivot{position:absolute;top:4%;right:4%;width:20%;aspect-ratio:1;border-radius:50%;
+    background:linear-gradient(145deg, oklch(75% 0.02 80), oklch(55% 0.02 80));
+    box-shadow:0 3px 8px oklch(12% 0 0 /.5)}
+  .tonearm-arm{position:absolute;top:11%;right:12%;width:6px;height:78%;
+    transform-origin:top center;transform:rotate(28deg);border-radius:6px;
+    background:linear-gradient(var(--color-paper), oklch(70% 0.01 80))}
+  .tonearm-head{position:absolute;bottom:6%;left:20%;width:15%;height:10%;border-radius:3px;
+    background:var(--color-ink-2);box-shadow:0 2px 6px oklch(12% 0 0 /.5)}
+
+  .rpm{position:absolute;right:9%;bottom:7%;font-family:var(--font-head);
+    color:var(--color-sun);font-size:.8rem;letter-spacing:.05em}
+
+  /* needle button + skip */
+  .needle-btn{display:inline-flex;align-items:center;gap:.6em;
+    font-family:var(--font-head);text-transform:uppercase;letter-spacing:.05em;
+    font-size:var(--text-base);color:var(--color-paper);background:var(--color-cherry);
+    padding:1em 1.8em;border-radius:var(--radius-pill);min-height:48px;margin-top:var(--space-sm);
+    box-shadow:var(--shadow-soft);
+    transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast) var(--ease-out)}
+  .needle-btn:hover{background:var(--color-cherry-deep);transform:translateY(-2px)}
+  .needle-dot{width:12px;height:12px;border-radius:50%;background:var(--color-sun);
+    box-shadow:0 0 0 0 var(--color-sun);animation:pulse 1.8s var(--ease-out) infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 oklch(83% 0.16 80 /.7)}
+    70%{box-shadow:0 0 0 14px oklch(83% 0.16 80 /0)}100%{box-shadow:0 0 0 0 oklch(83% 0.16 80 /0)}}
+  .enter-silent{color:var(--color-muted);font-size:var(--text-sm);text-decoration:underline;
+    text-underline-offset:3px;padding:.4em}
+  .enter-silent:hover{color:var(--color-ink)}
+
+  /* spinning */
+  .record.spinning{animation:spin 1.6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tonearm.playing{transform:rotate(2deg)}
+
+  /* stage dismiss — il disco resta e vola nell'angolo, lo sfondo svanisce */
+  .stage.fading{opacity:0;transition:opacity 650ms var(--ease-out);pointer-events:none}
+  .stage.fading .turntable{transition:opacity 450ms var(--ease-out);opacity:0}
+  /* il vinile NON svanisce con lo stage: lo nascondiamo solo a flip avvenuto */
+  .stage.fading #record{opacity:1}
+
+  /* ---- mini-player: solo il disco che gira, basso a destra ---- */
+  .minidisc{position:fixed;right:clamp(.9rem,3vw,1.6rem);bottom:clamp(.9rem,3vw,1.6rem);
+    z-index:90;width:clamp(66px,8vw,84px);aspect-ratio:1;border-radius:50%;padding:0;
+    opacity:0;will-change:transform;transform-origin:center}
+  .minidisc-vinyl{position:relative;width:100%;height:100%;border-radius:50%;display:grid;place-items:center;
+    background:
+      repeating-radial-gradient(circle at 50% 50%, oklch(16% 0.005 60) 0 1.5px, oklch(23% 0.01 60) 1.5px 3px),
+      radial-gradient(circle, oklch(20% 0.01 60), oklch(11% 0 0));
+    box-shadow:0 10px 26px oklch(15% 0 0 /.45), 0 0 0 3px var(--color-ink);
+    transition:transform var(--dur-fast) var(--ease-out)}
+  .minidisc-label{width:42%;height:42%;border-radius:50%;overflow:hidden;background:var(--color-cream);
+    display:grid;place-items:center;box-shadow:0 0 0 2px var(--color-cherry);z-index:2}
+  .minidisc-label img{width:84%;height:84%;object-fit:contain}
+  .minidisc-hole{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--color-cream);z-index:3;
+    box-shadow:inset 0 0 0 1px oklch(20% 0 0 /.5)}
+  .minidisc.spin .minidisc-vinyl{animation:spin 1.6s linear infinite}
+  .minidisc-state{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
+    color:var(--color-paper);font-size:1rem;letter-spacing:-1px;
+    opacity:0;background:oklch(12% 0 0 /0);
+    transition:opacity var(--dur-fast) var(--ease-out),background var(--dur-fast) var(--ease-out)}
+  .minidisc-state::before{content:"❚❚"}
+  .minidisc.paused .minidisc-state::before{content:"▶"}
+  .minidisc:hover .minidisc-state,.minidisc:focus-visible .minidisc-state{opacity:1;background:oklch(12% 0 0 /.45)}
+  .minidisc:hover .minidisc-vinyl{transform:scale(1.06)}
+
+  @media (prefers-reduced-motion: reduce){
+    .record.spinning,.minidisc.spin .minidisc-vinyl{animation:none}
+    .stage.fading{transition:opacity 200ms linear}
+    .needle-dot{animation:none}
+  }
+</style>
+
+<script>
+  function fadeVolume(audio: HTMLAudioElement, to: number, ms: number){
+    const from = audio.volume;
+    const start = performance.now();
+    function step(now: number){
+      const t = Math.min(1, (now - start) / ms);
+      audio.volume = from + (to - from) * t;
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const stage = document.getElementById('stage');
+  const tonearm = document.getElementById('tonearm');
+  const record = document.getElementById('record');
+  const needleBtn = document.getElementById('needleBtn');
+  const enterSilent = document.getElementById('enterSilent');
+  const song = document.getElementById('song') as HTMLAudioElement | null;
+  const miniDisc = document.getElementById('miniDisc') as HTMLButtonElement | null;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let dismissed = false;
+
+  // FLIP: il disco vola dalla posizione del vinile → angolo in basso a sinistra
+  function dockDisc(spinning: boolean){
+    if (!miniDisc){ stage?.setAttribute('hidden', ''); return; }
+    miniDisc.hidden = false;
+    miniDisc.classList.toggle('spin', spinning);
+    miniDisc.classList.toggle('paused', !spinning);
+
+    if (reduce || !record){
+      miniDisc.style.opacity = '1';
+      stage?.classList.add('fading');
+      setTimeout(() => stage?.setAttribute('hidden', ''), 280);
+      return;
+    }
+
+    // misura: dove approda (angolo) e dove si trova ora il vinile grande
+    miniDisc.style.opacity = '0';
+    const dock = miniDisc.getBoundingClientRect();
+    const rec = record.getBoundingClientRect();
+    const scale = rec.width / dock.width;
+    const dx = (rec.left + rec.width / 2) - (dock.left + dock.width / 2);
+    const dy = (rec.top + rec.height / 2) - (dock.top + dock.height / 2);
+
+    // posiziona il mini-disco esattamente sopra il vinile (grande), poi sfuma lo stage
+    miniDisc.style.zIndex = '130';
+    miniDisc.style.transition = 'none';
+    miniDisc.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+    miniDisc.style.opacity = '1';
+    stage?.classList.add('fading');
+
+    // frame dopo: anima fino all'angolo
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      miniDisc.style.transition = 'transform 920ms cubic-bezier(.65,0,.35,1)';
+      miniDisc.style.transform = 'none';
+    }));
+    setTimeout(() => {
+      stage?.setAttribute('hidden', '');
+      miniDisc.style.zIndex = '';
+    }, 1000);
+  }
+
+  function revealSite(withMusic: boolean){
+    if (dismissed) return;
+    dismissed = true;
+    document.body.classList.remove('locked');
+
+    if (withMusic && song){
+      song.volume = 0;
+      song.play().then(() => fadeVolume(song, 0.85, 1400)).catch(() => {});
+      record?.classList.add('spinning');
+      tonearm?.classList.add('playing');
+      // lascia godere la puntina che cala, poi il disco vola nell'angolo
+      setTimeout(() => dockDisc(true), 950);
+    } else {
+      setTimeout(() => dockDisc(false), 120);
+    }
+  }
+
+  document.body.classList.add('locked');
+  needleBtn?.addEventListener('click', () => { tonearm?.classList.add('playing'); revealSite(true); });
+  enterSilent?.addEventListener('click', () => revealSite(false));
+
+  // toggle pausa / play
+  miniDisc?.addEventListener('click', () => {
+    if (!song) return;
+    if (song.paused){
+      song.play().catch(() => {});
+      miniDisc.classList.add('spin');
+      miniDisc.classList.remove('paused');
+    } else {
+      song.pause();
+      miniDisc.classList.remove('spin');
+      miniDisc.classList.add('paused');
+    }
+  });
+</script>

@@ -1,0 +1,34 @@
+---
+// Marquee scorrevole — insegna da teatro. Divisore-firma del sito.
+const { items = ['Jazz', 'Swing', 'Dixieland', 'New Orleans', 'Salerno'], tone = 'ink' } = Astro.props;
+const loop = [...items, ...items, ...items, ...items];
+---
+<div class={`marquee marquee--${tone}`} aria-hidden="true">
+  <div class="marquee-track">
+    {loop.map((it) => (
+      <span class="marquee-item">{it}<b class="marquee-sep">✦</b></span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee{overflow:hidden;border-block:var(--rule-bold) solid var(--color-ink);
+    padding-block:.7rem;white-space:nowrap}
+  .marquee--ink{background:var(--color-ink);color:var(--color-cream)}
+  .marquee--cherry{background:var(--color-cherry);color:var(--color-paper);border-color:var(--color-cherry-deep)}
+  .marquee--sun{background:var(--color-sun);color:var(--color-ink);border-color:var(--color-ink)}
+  .marquee-track{display:inline-flex;align-items:center;
+    animation:slide 34s linear infinite;will-change:transform}
+  .marquee-item{font-family:var(--font-display);text-transform:uppercase;
+    font-size:clamp(1.2rem,3.4vw,2rem);letter-spacing:.02em;
+    display:inline-flex;align-items:center;gap:1.4rem;padding-right:1.4rem}
+  .marquee-sep{color:var(--color-cherry);font-size:.7em}
+  .marquee--cherry .marquee-sep,.marquee--sun .marquee-sep{color:currentColor;opacity:.6}
+  @keyframes slide{to{transform:translateX(-25%)}}
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @media (prefers-reduced-motion: reduce){
+    .marquee-track{animation:none}
+    .marquee{text-align:center}
+    .marquee-item:nth-child(n+6){display:none}
+  }
+</style>

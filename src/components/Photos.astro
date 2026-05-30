@@ -1,0 +1,117 @@
+---
+// Sezione Foto — muro a righe scorrevoli (versi opposti), pausa al hover, lightbox.
+import { photos } from '../data/site.js';
+
+// indicizza e distribuisci su 3 righe
+const indexed = photos.map((p, i) => ({ ...p, i }));
+const per = Math.ceil(indexed.length / 3);
+const rows = [indexed.slice(0, per), indexed.slice(per, per * 2), indexed.slice(per * 2)];
+const dirs = ['left', 'right', 'left'];
+const durs = ['62s', '78s', '70s'];
+---
+<section id="foto" class="section photos">
+  <div class="container sec-head reveal">
+    <p class="sec-kicker">dietro le quinte</p>
+    <h2 class="sec-title">Le foto</h2>
+    <p class="sec-lead">Un muro di istantanee — passa il mouse per fermarlo, clicca per ingrandire.</p>
+  </div>
+
+  <div class="wall">
+    {rows.map((row, r) => (
+      <div class={`row row--${dirs[r]}`} style={`--dur:${durs[r]}`}>
+        <div class="row-track">
+          {[...row, ...row].map((p, k) => (
+            <button class="gphoto" data-idx={p.i} aria-label={`Ingrandisci: ${p.alt}`}
+                    aria-hidden={k >= row.length ? 'true' : undefined} tabindex={k >= row.length ? -1 : undefined}>
+              <img src={p.src} alt={k >= row.length ? '' : p.alt} loading="lazy" />
+            </button>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script type="application/json" id="photosData" set:html={JSON.stringify(photos)}></script>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Chiudi">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Precedente">‹</button>
+  <img id="lbImg" src="" alt="" />
+  <button class="lb-nav lb-next" id="lbNext" aria-label="Successiva">›</button>
+</div>
+
+<style>
+  .photos{background:var(--color-cream);overflow:hidden}
+  .wall{display:flex;flex-direction:column;gap:var(--space-md);
+    -webkit-mask-image:linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    mask-image:linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent)}
+  .row{overflow:hidden}
+  .row-track{display:flex;gap:var(--space-sm);width:max-content;
+    animation:scroll-l var(--dur) linear infinite;will-change:transform}
+  .row--right .row-track{animation-name:scroll-r}
+  .wall:hover .row-track{animation-play-state:paused}
+
+  @keyframes scroll-l{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes scroll-r{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+
+  .gphoto{flex:none;height:clamp(150px,23vh,240px);padding:0;
+    border-radius:var(--radius-md);overflow:hidden;cursor:pointer;
+    border:4px solid var(--color-paper);box-shadow:var(--shadow-soft);
+    transition:transform var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+  .gphoto img{height:100%;width:auto;display:block}
+  .gphoto:hover{transform:translateY(-4px) scale(1.02);box-shadow:var(--shadow-lift);border-color:var(--color-sun)}
+
+  /* lightbox */
+  .lightbox{position:fixed;inset:0;z-index:110;background:oklch(15% 0.01 60 /.94);
+    display:grid;place-items:center;padding:clamp(1rem,5vw,3rem)}
+  .lightbox img{max-width:92vw;max-height:86vh;border-radius:var(--radius-md);
+    border:5px solid var(--color-paper);box-shadow:var(--shadow-lift)}
+  .lb-close,.lb-nav{position:absolute;color:var(--color-paper);
+    width:54px;height:54px;display:grid;place-items:center;border-radius:50%;
+    background:oklch(30% 0.01 60 /.6);min-height:44px}
+  .lb-close:hover,.lb-nav:hover{background:var(--color-cherry)}
+  .lb-close{top:1rem;right:1rem;font-size:1.4rem}
+  .lb-nav{top:50%;transform:translateY(-50%);font-size:2.4rem}
+  .lb-prev{left:1rem}.lb-next{right:1rem}
+
+  @media (max-width:560px){
+    .gphoto{height:clamp(130px,28vw,180px)}
+    .lb-nav{width:44px;height:44px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .row{overflow-x:auto}
+    .row-track{animation:none;width:auto}
+    .row-track button[aria-hidden="true"]{display:none}
+  }
+</style>
+
+<script>
+  type Photo = { src: string; alt: string };
+  const dataEl = document.getElementById('photosData');
+  const photos: Photo[] = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg') as HTMLImageElement | null;
+  let idx = 0;
+
+  function show(i: number){
+    idx = (i + photos.length) % photos.length;
+    if (lbImg){ lbImg.src = photos[idx].src; lbImg.alt = photos[idx].alt; }
+  }
+  function open(i: number){ show(i); lb?.removeAttribute('hidden'); document.body.classList.add('locked'); }
+  function close(){ lb?.setAttribute('hidden', ''); document.body.classList.remove('locked'); }
+
+  document.querySelectorAll<HTMLButtonElement>('.gphoto').forEach((b) => {
+    b.addEventListener('click', () => open(Number(b.dataset.idx || 0)));
+  });
+  document.getElementById('lbClose')?.addEventListener('click', close);
+  document.getElementById('lbNext')?.addEventListener('click', () => show(idx + 1));
+  document.getElementById('lbPrev')?.addEventListener('click', () => show(idx - 1));
+  lb?.addEventListener('click', (e) => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (lb?.hasAttribute('hidden')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowRight') show(idx + 1);
+    if (e.key === 'ArrowLeft') show(idx - 1);
+  });
+</script>

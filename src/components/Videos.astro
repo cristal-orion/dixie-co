@@ -1,0 +1,84 @@
+---
+// Sezione Video — facade YouTube (thumbnail → carica iframe al click).
+import { videos } from '../data/site.js';
+---
+<section id="video" class="section videos">
+  <div class="container">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">accendi le casse</p>
+      <h2 class="sec-title">Guardali suonare</h2>
+      <p class="sec-lead">Nove esibizioni dal vivo, dal jazz club al palco. Premi play.</p>
+    </div>
+
+    <div class="video-grid">
+      {videos.map((v, i) => (
+        <article class={`video-card reveal ${i === 0 ? 'feature' : ''}`}>
+          <button class="video-thumb" data-id={v.id} aria-label={`Riproduci: ${v.title}`}>
+            <img
+              src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}
+              alt={v.title} loading="lazy" width="480" height="360" />
+            <span class="video-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+          </button>
+          <h3 class="video-title">{v.title}</h3>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .videos{background:var(--color-paper)}
+  .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-md)}
+  .video-card.feature{grid-column:span 2;grid-row:span 2}
+  .video-thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;
+    border-radius:var(--radius-md);border:3px solid var(--color-ink);
+    background:var(--color-ink);display:block;
+    transition:transform var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out)}
+  .video-thumb img{width:100%;height:100%;object-fit:cover;
+    transition:transform var(--dur-mid) var(--ease-out);opacity:.92}
+  .video-thumb:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift)}
+  .video-thumb:hover img{transform:scale(1.05);opacity:1}
+  .video-play{position:absolute;inset:0;margin:auto;width:60px;height:60px;
+    display:grid;place-items:center;border-radius:50%;
+    background:var(--color-cherry);color:var(--color-paper);
+    box-shadow:0 6px 18px oklch(20% 0 0 /.4);
+    transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast) var(--ease-out)}
+  .video-thumb:hover .video-play{transform:scale(1.12);background:var(--color-cherry-deep)}
+  .video-play svg{margin-left:3px}
+  .video-card.feature .video-play{width:80px;height:80px}
+  .video-thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .video-title{font-family:var(--font-head);font-size:.95rem;margin-top:.6rem;color:var(--color-ink-2)}
+
+  @media (max-width:760px){
+    .video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .video-card.feature{grid-column:span 2;grid-row:auto}
+  }
+  @media (max-width:460px){
+    .video-grid{grid-template-columns:1fr}
+    .video-card.feature{grid-column:auto}
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.video-thumb').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      if (!id || btn.querySelector('iframe')) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.title = btn.getAttribute('aria-label') || 'Video';
+      btn.innerHTML = '';
+      btn.appendChild(iframe);
+      // ferma la musica di sottofondo se sta suonando
+      const song = document.getElementById('song') as HTMLAudioElement | null;
+      if (song && !song.paused) {
+        song.pause();
+        const md = document.getElementById('miniDisc');
+        md?.classList.remove('spin');
+        md?.classList.add('paused');
+      }
+    });
+  });
+</script>

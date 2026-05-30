@@ -1,0 +1,81 @@
+---
+// Sezione "Band" — chi sono. Lead editoriale + foto + organico.
+import { band } from '../data/site.js';
+
+const organico = [
+  'voce', 'sax', 'tromba', 'pianoforte', 'batteria', 'contrabbasso',
+  'trombone', 'tuba', 'banjo', 'clarinetto', 'flauto', 'violino',
+];
+const citta = ['Roma', 'Pisa', 'Napoli', 'Ravello', 'Amalfi', 'Livorno'];
+---
+<section id="band" class="section about">
+  <div class="container about-grid">
+    <div class="about-text reveal">
+      <p class="sec-kicker">amici d'infanzia, dal 2013</p>
+      <h2 class="sec-title">Eleganti<br/>ma irriverenti</h2>
+      <p class="about-lead">
+        Dixie&nbsp;&amp;&nbsp;Co. nasce a <strong>Salerno</strong> dall'idea di cari amici
+        d'infanzia: strade musicali diverse che si ritrovano per suonare <em>jazz, dixieland
+        e swing</em> — quello dei primi anni del '900, nato a New Orleans.
+      </p>
+      <p class="about-body">
+        Giacche a righe, cappelli di paglia e un'energia da soda-fountain: ricreiamo
+        l'atmosfera delle dixieland band con un intrattenimento allegro e coinvolgente.
+        Un organico variabile da <strong>3 a 10 musicisti</strong>, su misura per ogni evento.
+      </p>
+
+      <div class="organico-wrap">
+        <span class="organico-label script">l'organico</span>
+        <p class="organico">
+          {organico.map((o, i) => (
+            <><span class="instr">{o}</span>{i < organico.length - 1 && <b class="note" aria-hidden="true">♪</b>}</>
+          ))}
+          <span class="instr instr-more">e altro ancora</span>
+        </p>
+      </div>
+
+      <p class="about-tour">
+        <span class="script tour-label">in tour da</span>
+        {citta.map((c, i) => <><span class="tour-city">{c}</span>{i < citta.length - 1 && <b>·</b>}</>)}
+        <span class="tour-city">e oltre</span>
+      </p>
+    </div>
+
+    <figure class="about-photo reveal">
+      <img src="/foto/band-bianco.jpg" alt="Dixie & Co. in giacca bianca" width="638" height="960" loading="lazy" />
+      <figcaption class="script">da 3 a 10 in giacca a righe</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .about{background:var(--color-cream)}
+  .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--space-2xl);align-items:center}
+  .about-lead{font-size:var(--text-xl);line-height:1.45;margin-top:var(--space-md);max-width:34ch}
+  .about-lead strong{color:var(--color-cherry)}
+  .about-body{margin-top:var(--space-md);color:var(--color-ink-2);max-width:44ch}
+  .organico-wrap{margin-top:var(--space-lg);border-top:2px solid var(--color-ink);padding-top:var(--space-md)}
+  .organico-label{color:var(--color-cherry);font-size:1.3rem;display:block;margin-bottom:.3rem}
+  .organico{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .55rem;
+    font-family:var(--font-head);font-size:clamp(1.05rem,2vw,1.45rem);line-height:1.3;color:var(--color-ink)}
+  .organico .instr{text-transform:lowercase}
+  .organico .note{color:var(--color-teal);font-size:.7em;transform:translateY(-1px)}
+  .organico .instr-more{color:var(--color-cherry)}
+  .about-tour{margin-top:var(--space-lg);display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem}
+  .tour-label{color:var(--color-cherry);font-size:1.3rem;margin-right:.3rem}
+  .tour-city{font-family:var(--font-head);font-size:1rem}
+  .about-tour b{color:var(--color-teal)}
+
+  .about-photo{position:relative;margin:0}
+  .about-photo img{width:100%;border-radius:var(--radius-lg);
+    border:5px solid var(--color-paper);box-shadow:var(--shadow-lift);
+    rotate:2deg}
+  .about-photo figcaption{position:absolute;left:-.5rem;bottom:-1.2rem;
+    background:var(--color-cherry);color:var(--color-paper);
+    font-size:1.2rem;padding:.2em .8em;border-radius:var(--radius-pill);rotate:-3deg}
+
+  @media (max-width:860px){
+    .about-grid{grid-template-columns:1fr;gap:var(--space-xl)}
+    .about-photo{max-width:380px}
+  }
+</style>

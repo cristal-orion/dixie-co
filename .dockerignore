@@ -1,0 +1,17 @@
+node_modules
+dist
+.astro
+.git
+.gitignore
+package-lock.json
+
+# file di lavoro pesanti (non servono al build)
+assets-originali
+Foto nove
+hero.png
+Logotipo.png
+logo stretto.png
+df7ed656-*.png
+WhatsApp Audio*.mpeg
+WhatsApp Image*.jpeg
+style-guide.html

@@ -1,0 +1,130 @@
+---
+// N7 · Brutal Slab — trasparente sulla hero, si solidifica allo scroll.
+import { nav } from '../data/site.js';
+---
+<header class="nav" id="nav">
+  <div class="container nav-row">
+    <a class="nav-mark" href="#top" aria-label="Dixie & Co. — home">
+      <img class="nav-logo" id="navLogo" src="/img/logo-stretto.png" alt="Dixie & Co." width="1275" height="358" />
+    </a>
+    <nav class="nav-links" aria-label="Navigazione principale">
+      {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    </nav>
+    <a class="nav-cta" href="#contatti">Scrivici</a>
+    <button class="nav-burger" id="navBurger" aria-label="Apri menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-drawer" id="navDrawer" aria-label="Menu mobile">
+    {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    <a href="#contatti" class="drawer-cta">Scrivici</a>
+  </nav>
+</header>
+
+<style>
+  .nav{position:fixed;top:0;left:0;right:0;z-index:80;
+    background:transparent;border-bottom:var(--rule-bold) solid transparent;
+    transition:background var(--dur-mid) var(--ease-out),border-color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out)}
+  .nav-row{display:flex;align-items:center;gap:var(--space-md);min-height:76px;padding-block:.5rem}
+  .nav-mark{display:flex;align-items:center}
+  .nav-logo{height:42px;width:auto;
+    /* sulla foto: bianco */ filter:brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,.45));
+    transition:filter var(--dur-mid) var(--ease-out);
+    /* parte invisibile: compare quando il logo della hero "arriva" su */ opacity:0}
+
+  .nav-links{display:flex;gap:clamp(.8rem,2.2vw,1.8rem);margin-left:auto}
+  .nav-links a{font-family:var(--font-head);text-transform:uppercase;letter-spacing:.08em;
+    font-size:.82rem;color:var(--color-paper);padding:.3em 0;position:relative;
+    text-shadow:0 1px 6px oklch(15% 0 0 /.5);transition:color var(--dur-mid) var(--ease-out)}
+  .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;
+    background:var(--color-cherry);transform:scaleX(0);transform-origin:left;
+    transition:transform var(--dur-fast) var(--ease-out)}
+  .nav-links a:hover::after{transform:scaleX(1)}
+  .nav-cta{font-family:var(--font-head);text-transform:uppercase;letter-spacing:.06em;font-size:.8rem;
+    background:var(--color-cherry);color:var(--color-paper);padding:.6em 1.2em;border-radius:var(--radius-pill);
+    transition:background var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out)}
+  .nav-cta:hover{background:var(--color-cherry-deep);transform:translateY(-1px)}
+
+  /* ---- stato solidificato (allo scroll) ---- */
+  .nav.scrolled{background:var(--color-cream);
+    border-bottom-color:var(--color-ink);box-shadow:0 6px 20px -14px oklch(20% 0 0 /.5)}
+  .nav.scrolled .nav-logo{filter:none}
+  .nav.scrolled .nav-links a{color:var(--color-ink-2);text-shadow:none}
+  .nav.scrolled .nav-burger span{background:var(--color-ink)}
+
+  .nav-burger{display:none;flex-direction:column;gap:5px;padding:.5rem;margin-left:auto}
+  .nav-burger span{width:26px;height:3px;background:var(--color-paper);border-radius:2px;
+    box-shadow:0 1px 4px oklch(15% 0 0 /.4);
+    transition:transform var(--dur-fast) var(--ease-out),opacity var(--dur-fast) var(--ease-out),background var(--dur-mid) var(--ease-out)}
+  .nav-burger[aria-expanded="true"] span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+  .nav-burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .nav-burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+
+  .nav-drawer{display:none;flex-direction:column;background:var(--color-cream);
+    border-top:var(--rule-hair) solid oklch(80% 0.02 80)}
+  .nav-drawer a{font-family:var(--font-head);text-transform:uppercase;letter-spacing:.06em;
+    padding:1rem clamp(1rem,4vw,2rem);border-bottom:var(--rule-hair) solid oklch(85% 0.02 80);
+    min-height:44px;display:flex;align-items:center;color:var(--color-ink)}
+  .nav-drawer .drawer-cta{color:var(--color-cherry)}
+  .nav-drawer.open{display:flex}
+
+  @media (max-width:760px){
+    .nav-row{min-height:64px}
+    .nav-logo{height:32px}
+    .nav-links,.nav-cta{display:none}
+    .nav-burger{display:flex}
+    /* su mobile, quando il drawer è aperto serve sfondo opaco */
+    .nav:has(.nav-drawer.open){background:var(--color-cream)}
+    .nav:has(.nav-drawer.open) .nav-logo{filter:none}
+    .nav:has(.nav-drawer.open) .nav-burger span{background:var(--color-ink)}
+  }
+</style>
+
+<script>
+  const navEl = document.getElementById('nav');
+  const burger = document.getElementById('navBurger');
+  const drawer = document.getElementById('navDrawer');
+  const heroSection = document.getElementById('hero');
+  const heroLogo = document.getElementById('heroLogo');
+  const heroCenter = document.getElementById('heroCenter');
+  const navLogo = document.getElementById('navLogo');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+
+  // il logo della hero si rimpicciolisce, sale e "passa" nell'header
+  const onScroll = () => {
+    if (!heroSection){
+      navEl?.classList.add('scrolled');
+      if (navLogo) navLogo.style.opacity = '1';
+      return;
+    }
+    const h = heroSection.offsetHeight || window.innerHeight;
+    const p = clamp(window.scrollY / (h * 0.62), 0, 1);
+
+    if (heroLogo && !reduce){
+      heroLogo.style.transform = `translateY(${-p * 70}px) scale(${1 - 0.55 * p})`;
+    }
+    if (heroCenter){
+      heroCenter.style.opacity = String(1 - clamp(p * 1.3, 0, 1));
+    }
+    if (navLogo){
+      navLogo.style.opacity = String(clamp((p - 0.45) / 0.4, 0, 1));
+    }
+    navEl?.classList.toggle('scrolled', p > 0.55);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+
+  burger?.addEventListener('click', () => {
+    const open = drawer?.classList.toggle('open');
+    burger.setAttribute('aria-expanded', String(!!open));
+  });
+  drawer?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      burger?.setAttribute('aria-expanded', 'false');
+    })
+  );
+</script>

@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Turntable from '../components/Turntable.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Marquee from '../components/Marquee.astro';
+import Videos from '../components/Videos.astro';
+import Photos from '../components/Photos.astro';
+import Cerimonia from '../components/Cerimonia.astro';
+import Contatti from '../components/Contatti.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base>
+  <Turntable />
+  <Nav />
+  <main>
+    <Hero />
+    <About />
+    <Marquee items={['Jazz', 'Swing', 'Dixieland', 'New Orleans', 'Salerno', '1900s']} tone="ink" />
+    <Videos />
+    <Photos />
+    <Marquee items={['Aperitivo', 'Taglio torta', 'Swing', "Rock'n'roll", 'Twist', 'Festa']} tone="cherry" />
+    <Cerimonia />
+    <Contatti />
+  </main>
+  <Footer />
+</Base>

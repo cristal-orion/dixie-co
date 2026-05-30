@@ -1,0 +1,77 @@
+/* Hallmark · genre: playful (high-chroma custom) · macrostructure: Marquee Hero
+ * theme: custom "Soda Fountain Swing" · paper-band: light · display-style: display-heavy-slab · accent-hue: warm (cherry 28°)
+ * enrichment: H9 hand-built SVG turntable (Tier B) · nav: N7 Brutal Slab · footer: Ft8 Marquee Scroll
+ */
+:root{
+  /* ---- colour (OKLCH) ---- */
+  --color-cherry:      oklch(58% 0.19 28);
+  --color-cherry-deep: oklch(50% 0.18 27);
+  --color-cream:       oklch(95% 0.03 90);   /* paper principale */
+  --color-paper:       oklch(98% 0.012 90);  /* superfici chiare / righe bianche */
+  --color-teal:        oklch(60% 0.10 185);
+  --color-teal-deep:   oklch(52% 0.09 185);
+  --color-sun:         oklch(83% 0.16 80);
+  --color-coral:       oklch(75% 0.14 40);
+  --color-ink:         oklch(24% 0.012 60);
+  --color-ink-2:       oklch(30% 0.014 60);
+  --color-navy:        oklch(28% 0.04 250);
+  --color-muted:       oklch(45% 0.02 60);
+
+  /* semantic */
+  --color-bg:          var(--color-cream);
+  --color-text:        var(--color-ink);
+  --color-accent:      var(--color-cherry);
+
+  /* ---- type ---- */
+  --font-display: 'Alfa Slab One', Georgia, serif;
+  --font-head:    'Lilita One', system-ui, sans-serif;
+  --font-script:  'Pacifico', cursive;
+  --font-body:    'Poppins', system-ui, sans-serif;
+
+  --text-xs:  0.78rem;
+  --text-sm:  0.9rem;
+  --text-base:1.05rem;
+  --text-lg:  1.25rem;
+  --text-xl:  1.6rem;
+  --text-2xl: 2.2rem;
+  --text-3xl: clamp(2.4rem, 6vw, 4rem);
+  --text-display-s: clamp(3rem, 9vw, 6rem);
+  --text-display:   clamp(3.5rem, 13vw, 11rem);
+
+  /* ---- space (4pt) ---- */
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1.25rem;
+  --space-lg:  2rem;
+  --space-xl:  3.5rem;
+  --space-2xl: 5.5rem;
+  --space-3xl: 8rem;
+
+  /* ---- radius ---- */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* ---- rules / motion ---- */
+  --rule-hair: 1px;
+  --rule-bold: 3px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in:  cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-mid:  320ms;
+  --dur-slow: 600ms;
+
+  --shadow-soft: 0 10px 30px -16px oklch(24% 0.05 60 / 0.45);
+  --shadow-lift: 0 18px 44px -20px oklch(24% 0.05 60 / 0.55);
+
+  /* stripe motif */
+  --stripe: repeating-linear-gradient(90deg,
+            var(--color-cherry) 0 26px, var(--color-paper) 26px 52px);
+  --stripe-thin: repeating-linear-gradient(90deg,
+            var(--color-cherry) 0 14px, var(--color-paper) 14px 28px);
+
+  --container: 1180px;
+}
