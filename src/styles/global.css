@@ -68,3 +68,7 @@ h1,h2,h3{line-height:1.02;font-weight:400}
     transition-duration:.001ms!important;scroll-behavior:auto!important}
   .reveal{opacity:1;transform:none}
 }
+
+/* testo solo per screen reader / SEO (es. h1 nascosto graficamente) */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
